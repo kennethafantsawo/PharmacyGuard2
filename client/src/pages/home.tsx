@@ -1,20 +1,25 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Settings, MapPin, List, Map } from "lucide-react";
+import { Search, Settings, MapPin, List, Map, Wifi, WifiOff } from "lucide-react";
 import PharmacyCard from "@/components/pharmacy-card";
 import PharmacyMap from "@/components/pharmacy-map";
 import SearchBar from "@/components/search-bar";
 import AdminPanel from "@/components/admin-panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import type { Pharmacy } from "@shared/schema";
 import { getCurrentWeekText, scheduleWeeklyUpdate } from "@/lib/pharmacy-utils";
+import { useWebSocketSync } from "@/hooks/useWebSocketSync";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isMapView, setIsMapView] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [currentWeek, setCurrentWeek] = useState(getCurrentWeekText());
+  
+  // WebSocket sync for real-time updates
+  const { isConnected, lastUpdate } = useWebSocketSync();
 
   const { data: pharmacies = [], isLoading, error } = useQuery<Pharmacy[]>({
     queryKey: ["/api/pharmacies/current-week"],
@@ -80,7 +85,19 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-xl font-bold">Pharmacies de Garde</h1>
-              <p className="text-sm opacity-90">{currentWeek}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-sm opacity-90">{currentWeek}</p>
+                <Badge 
+                  variant={isConnected ? "secondary" : "outline"}
+                  className="flex items-center gap-1 text-xs px-2 py-0.5"
+                >
+                  {isConnected ? (
+                    <><Wifi className="w-3 h-3" /> En ligne</>
+                  ) : (
+                    <><WifiOff className="w-3 h-3" /> Hors ligne</>
+                  )}
+                </Badge>
+              </div>
             </div>
           </div>
           <Button

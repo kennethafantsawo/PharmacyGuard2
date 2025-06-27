@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { WebSocketServer } from "ws";
 import { storage } from "./storage";
 import multer from "multer";
 import * as XLSX from "xlsx";
@@ -32,7 +33,52 @@ const authenticateAdmin = (req: any, res: any, next: any) => {
   next();
 };
 
+// WebSocket clients for real-time updates
+let wsClients: Set<any> = new Set();
+
+// Broadcast update to all connected clients
+function broadcastDataUpdate(data: any) {
+  const message = JSON.stringify({
+    type: "PHARMACY_DATA_UPDATED",
+    data: data,
+    timestamp: new Date().toISOString()
+  });
+  
+  wsClients.forEach(ws => {
+    if (ws.readyState === ws.OPEN) {
+      ws.send(message);
+    }
+  });
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  const httpServer = createServer(app);
+  
+  // Setup WebSocket server on a different port to avoid conflicts with Vite
+  const wss = new WebSocketServer({ port: 8080 });
+  
+  wss.on('connection', (ws) => {
+    wsClients.add(ws);
+    console.log('New WebSocket connection. Total clients:', wsClients.size);
+    
+    // Send welcome message
+    ws.send(JSON.stringify({
+      type: "CONNECTION_ESTABLISHED",
+      message: "Connexion établie pour les mises à jour en temps réel"
+    }));
+    
+    ws.on('close', () => {
+      wsClients.delete(ws);
+      console.log('WebSocket connection closed. Total clients:', wsClients.size);
+    });
+    
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+      wsClients.delete(ws);
+    });
+  });
+  
+  console.log('WebSocket server running on port 8080');
   // Admin authentication endpoint
   app.post("/api/admin/login", (req, res) => {
     const { password } = req.body;
@@ -131,6 +177,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createPharmacyWithSchedule(item.pharmacy, item.schedule);
       }
 
+      // Get updated data for broadcast
+      const now = new Date();
+      const updatedPharmacies = await storage.getPharmaciesForCurrentWeek(now);
+      
+      // Broadcast update to all connected clients
+      broadcastDataUpdate(updatedPharmacies);
+
       res.json({ 
         message: "File processed successfully", 
         processedCount: processedData.length 
@@ -168,6 +221,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
   return httpServer;
 }
