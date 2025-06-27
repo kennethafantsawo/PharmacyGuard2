@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Pharmacies de Garde - Application Mobile</title>
+    <meta name="description" content="Trouvez facilement les pharmacies de garde près de chez vous. Application mobile avec recherche, carte interactive et contacts directs." />
+    <meta name="theme-color" content="#0F766E" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Pharmacies de Garde" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzBGNzY2RSIvPgo8cGF0aCBkPSJNMTYgN0MyMS41MjI4IDcgMjYgMTEuNDc3MiAyNiAxN1MyMS41MjI4IDI3IDE2IDI3UzYgMjIuNTIyOCA2IDE3UzEwLjQ3NzIgNyAxNiA3WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTE2IDExQzEzLjMzMzMgMTEgMTMuMzMzMyAxMSAxMy4zMzMzIDEzLjMzMzNWMTZIMTFDMTEgMTYgMTEgMTYgMTEgMTguNjY2N0gxMy4zMzMzVjIxQzEzLjMzMzMgMjEgMTMuMzMzMyAyMSAxNiAyMUgxOC42NjY3QzE4LjY2NjcgMjEgMTguNjY2NyAyMSAxOC42NjY3IDE4LjY2NjdWMTZIMjFDMjEgMTYgMjEgMTYgMjEgMTMuMzMzM0gxOC42NjY3VjExQzE4LjY2NjcgMTEgMTguNjY2NyAxMSAxNiAxMVoiIGZpbGw9IiMwRjc2NkUiLz4KPC9zdmc+" />
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiByeD0iNDAiIGZpbGw9IiMwRjc2NkUiLz4KPHA+PHBhdGggZD0iTTkwIDM3LjVDMTE2LjUxIDM3LjUgMTM3LjUgNTguNDkgMTM3LjUgODVTMTE2LjUxIDEzMi41IDkwIDEzMi41UzQyLjUgMTExLjUxIDQyLjUgODVTNjMuNDkgMzcuNSA5MCAzNy41WiIgZmlsbD0id2hpdGUiLz4KPHA+PHBhdGggZD0iTTkwIDYwQzc1IDYwIDc1IDYwIDc1IDc1VjkwSDYwQzYwIDkwIDYwIDkwIDYwIDEwNUg3NVYxMjBDNzUgMTIwIDc1IDEyMCA5MCAxMjBIMTA1QzEwNSAxMjAgMTA1IDEyMCAxMDUgMTA1VjkwSDEyMEMxMjAgOTAgMTIwIDkwIDEyMCA3NUgxMDVWNjBDMTA1IDYwIDEwNSA2MCA5MCA2MFoiIGZpbGw9IiMwRjc2NkUiLz4KPC9zdmc+" />
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Pharmacies de Garde - Application Mobile" />
+    <meta property="og:description" content="Trouvez facilement les pharmacies de garde près de chez vous" />
+    <meta property="og:image" content="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI2MzAiIHZpZXdCb3g9IjAgMCAxMjAwIDYzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjMwIiBmaWxsPSIjRjhGQUZDIi8+CjxyZWN0IHg9IjUwMCIgeT0iMjE1IiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjI0IiBmaWxsPSIjMEY3NjZFIi8+CjxwYXRoIGQ9Ik02MDAgMjc1QzYzOS4xIDI3NSA2NzAuNSAzMDYuNCA2NzAuNSAzNDUuNVM2MzkuMSA0MTYgNjAwIDQxNlM1MjkuNSAzODQuNiA1MjkuNSAzNDUuNVM1NjAuOSAyNzUgNjAwIDI75WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTYwMCAzMTBDNTg1IDMxMCA1ODUgMzEwIDU4NSAzMjVWMzQ2SDU2NEM1NjQgMzQ2IDU2NCAzNDYgNTY0IDM2MUg1ODVWMTGDQ1U4NSAzODIgNTg1IDM4MiA2MDAgMzgySDYxNUM2MTUgMzgyIDYxNSAzODIgNjE1IDM2MVY4NCSDNjM2QzYzNiAzNDYgNjM2IDM0NiA2MzYgMzI1SDYxNVYzMTBDNjE1IDMxMCA2MTUgMzEwIDYwMCAzMTBaIiBmaWxsPSIjMEY3NjZFIi8+CjwvcDJnPg==" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pharmacies de Garde" />
+    <meta name="twitter:description" content="Application mobile pour trouver les pharmacies de garde" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+    
+    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+  </body>
+</html>

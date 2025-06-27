@@ -1,0 +1,25 @@
+{
+  "name": "Pharmacies de Garde",
+  "short_name": "Pharmacies",
+  "description": "Application pour trouver les pharmacies de garde",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0F766E",
+  "background_color": "#F8FAFC",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "fr",
+  "categories": ["health", "medical", "utilities"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMwRjc2NkUiLz4KPHA+PHBhdGggZD0iTTk2IDQwQzEyNC4xNjkgNDAgMTQ2LjUgNjIuMzMxIDE0Ni41IDkwLjVTMTI0LjE2OSAxNDEgOTYgMTQxUzQ1LjUgMTE4LjY2OSA0NS41IDkwLjVTNjcuODMxIDQwIDk2IDQwWiIgZmlsbD0id2hpdGUiLz4KPHA+PHBhdGggZD0iTTk2IDY0QzgwIDY0IDgwIDY0IDgwIDgwVjk2SDY0Qzg0IDk2IDg0IDk2IDY0IDExMkg4MFYxMjhDODAgMTI4IDgwIDEyOCA5NiAxMjhIMTEyQzExMiAxMjggMTEyIDEyOCAxMTIgMTEyVjk2SDEyOEMxMjggOTYgMTI4IDk2IDEyOCA4MEgxMTJWNjRDMTEyIDY0IDExMiA2NCA5NiA2NFoiIGZpbGw9IiMwRjc2NkUiLz4KPC9zdmc+",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iNjQiIGZpbGw9IiMwRjc2NkUiLz4KPHA+PHBhdGggZD0iTTI1NiAxMDdDMzMyLjQ0NyAxMDcgMzkyLjUgMTY3LjA1MyAzOTIuNSAyNDMuNVMzMzIuNDQ3IDM4MCAyNTYgMzgwUzExOS41IDMxOS45NDcgMTE5LjUgMjQzLjVTMTc5LjU1MyAxMDcgMjU2IDEwN1oiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNTYgMTcxQzIxMy4zMzMgMTcxIDIxMy4zMzMgMTcxIDIxMy4zMzMgMjEzLjMzM1YyNTZIMTcxQzE3MSAyNTYgMTcxIDI1NiAxNzEgMjk4LjY2N0gyMTMuMzMzVjM0MUMyMTMuMzMzIDM0MSAyMTMuMzMzIDM0MSAyNTYgMzQxSDI5OC42NjdDMjk4LjY2NyAzNDEgMjk4LjY2NyAzNDEgMjk4LjY2NyAyOTguNjY3VjI1NkgzNDFDMzQxIDI1NiAzNDEgMjU2IDM0MSAyMTMuMzMzSDI5OC42NjdWMTcxQzI5OC42NjcgMTcxIDI5OC42NjcgMTcxIDI1NiAxNzFaIiBmaWxsPSIjMEY3NjZFIi8+Cjwvc3ZnPg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
