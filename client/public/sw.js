@@ -83,34 +83,43 @@ self.addEventListener('periodicsync', (event) => {
 });
 
 async function updatePharmacyData() {
-  const now = new Date();
-  const hours = now.getHours();
-  
-  // Only update at 7:00 AM
-  if (hours === 7) {
-    try {
-      const response = await fetch('/api/pharmacies/current-week');
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Store in cache for offline access
-        const cache = await caches.open(CACHE_NAME);
-        cache.put('/api/pharmacies/current-week', new Response(JSON.stringify(data)));
-        
-        // Notify clients about the update
-        const clients = await self.clients.matchAll();
-        clients.forEach(client => {
-          client.postMessage({
-            type: 'PHARMACY_DATA_UPDATED',
-            data: data
-          });
+  try {
+    console.log('Service Worker: Updating pharmacy data...');
+    
+    const response = await fetch('/api/pharmacies/current-week');
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Store in cache for offline access
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put('/api/pharmacies/current-week', new Response(JSON.stringify(data), {
+        headers: { 'Content-Type': 'application/json' }
+      }));
+      
+      console.log('Service Worker: Pharmacy data updated successfully');
+      
+      // Notify all clients about the update
+      const clients = await self.clients.matchAll();
+      clients.forEach(client => {
+        client.postMessage({
+          type: 'PHARMACY_DATA_UPDATED',
+          data: data,
+          timestamp: new Date().toISOString()
         });
-      }
-    } catch (error) {
-      console.error('Failed to update pharmacy data:', error);
+      });
     }
+  } catch (error) {
+    console.error('Service Worker: Error updating pharmacy data:', error);
   }
 }
+
+// Handle real-time sync messages from server
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'FORCE_UPDATE') {
+    console.log('Service Worker: Received force update request');
+    updatePharmacyData();
+  }
+});
 
 // Push notification handler
 self.addEventListener('push', (event) => {
