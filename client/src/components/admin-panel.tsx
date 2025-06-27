@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { X, Upload, CheckCircle, AlertCircle, FileSpreadsheet } from "lucide-react";
+import { X, Upload, CheckCircle, AlertCircle, FileSpreadsheet, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
+import AdminLogin from "@/components/admin-login";
 
 interface AdminPanelProps {
   isOpen: boolean;
@@ -24,10 +25,46 @@ export default function AdminPanel({ isOpen, onClose, standalone = false }: Admi
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isAuthenticated, isLoading: authLoading, login, logout, getAuthenticatedApiRequest } = useAdminAuth();
+
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    if (standalone) {
+      return (
+        <div className="pwa-container">
+          <AdminLogin onLogin={login} isLoading={authLoading} />
+        </div>
+      );
+    }
+    
+    if (!isOpen) return null;
+    
+    return (
+      <div className="fixed inset-0 bg-black/50 z-50 admin-panel">
+        <div className="absolute inset-x-0 bottom-0 bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto">
+          <div className="p-4 border-b border-border">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-foreground">Administration</h2>
+              <Button variant="ghost" size="icon" onClick={onClose}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+          <div className="p-4">
+            <AdminLogin onLogin={login} isLoading={authLoading} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const { data: status } = useQuery<AdminStatus>({
     queryKey: ["/api/admin/status"],
-    enabled: isOpen || standalone,
+    queryFn: async () => {
+      const response = await getAuthenticatedApiRequest("POST", "/api/admin/status");
+      return response.json();
+    },
+    enabled: (isOpen || standalone) && isAuthenticated,
   });
 
   const uploadMutation = useMutation({
@@ -35,7 +72,7 @@ export default function AdminPanel({ isOpen, onClose, standalone = false }: Admi
       const formData = new FormData();
       formData.append("file", file);
       
-      const response = await apiRequest("POST", "/api/admin/upload-xlsx", formData);
+      const response = await getAuthenticatedApiRequest("POST", "/api/admin/upload-xlsx", formData);
       return response.json();
     },
     onSuccess: (data) => {
@@ -81,6 +118,14 @@ export default function AdminPanel({ isOpen, onClose, standalone = false }: Admi
 
   const content = (
     <div className="space-y-4">
+      {/* Logout button */}
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Panneau d'administration</h3>
+        <Button variant="outline" size="sm" onClick={logout}>
+          <LogOut className="w-4 h-4 mr-2" />
+          Déconnexion
+        </Button>
+      </div>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
