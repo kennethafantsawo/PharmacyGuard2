@@ -19,7 +19,31 @@ const xlsxRowSchema = z.object({
   dateFin: z.string(),
 });
 
+// Simple admin authentication middleware
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+
+const authenticateAdmin = (req: any, res: any, next: any) => {
+  const { password } = req.body;
+  
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: "Mot de passe incorrect" });
+  }
+  
+  next();
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Admin authentication endpoint
+  app.post("/api/admin/login", (req, res) => {
+    const { password } = req.body;
+    
+    if (password === ADMIN_PASSWORD) {
+      res.json({ success: true, message: "Connexion réussie" });
+    } else {
+      res.status(401).json({ error: "Mot de passe incorrect" });
+    }
+  });
+
   // Get current week's pharmacies
   app.get("/api/pharmacies/current-week", async (req, res) => {
     try {
@@ -47,8 +71,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload XLSX file
-  app.post("/api/admin/upload-xlsx", upload.single("file"), async (req, res) => {
+  // Upload XLSX file (protected)
+  app.post("/api/admin/upload-xlsx", upload.single("file"), authenticateAdmin, async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
@@ -117,8 +141,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all pharmacies (admin)
-  app.get("/api/admin/pharmacies", async (req, res) => {
+  // Get all pharmacies (admin, protected)
+  app.post("/api/admin/pharmacies", authenticateAdmin, async (req, res) => {
     try {
       const pharmacies = await storage.getAllPharmacies();
       res.json(pharmacies);
@@ -128,8 +152,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get upload status
-  app.get("/api/admin/status", async (req, res) => {
+  // Get upload status (protected)
+  app.post("/api/admin/status", authenticateAdmin, async (req, res) => {
     try {
       const count = await storage.getPharmacyCount();
       const lastUpdate = await storage.getLastUpdateTime();
